@@ -20,4 +20,6 @@ COPY ./src /app/src
 
 RUN npm install
 
+RUN mkdir /app/screenshots
+
 CMD ["npm", "start"]

@@ -1,10 +1,11 @@
 import fs from "fs";
 import path from "path";
-import puppeteer from "puppeteer";
+import puppeteer from 'puppeteer-extra'
+import StealthPlugin from 'puppeteer-extra-plugin-stealth'
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
-const BASE_URL = "https://app.gmt.io";
+const BASE_URL = "https://app.gomining.com";
 const COOKIES_PATH = path.join(__dirname, "../cookies.json");
 
 export default class GoMining {
@@ -15,7 +16,7 @@ export default class GoMining {
     }
 
     async init() {
-        const browser = await puppeteer.launch({
+        const browser = await puppeteer.use(StealthPlugin()).launch({
             headless: "new",
             args: ["--no-sandbox", "--disable-setuid-sandbox"]
         });
@@ -36,6 +37,11 @@ export default class GoMining {
         fs.writeFileSync(COOKIES_PATH, JSON.stringify(cookies));
     }
 
+    async screenshot() {
+        let time = new Date().toISOString().replace(/:/g, "-");
+        await this.page.screenshot({ path: path.join(__dirname, `../screenshots/${time}.png`) });
+    }
+
     async login() {
         await this.initPromise;
         await this.page.goto(`${BASE_URL}/login`);
@@ -48,6 +54,7 @@ export default class GoMining {
 
         await this.page.type("input[type=email]", this.email);
         await this.page.type("input[type=password]", this.password);
+        await this.screenshot();
         await new Promise(resolve => setTimeout(resolve, 2_500));
         await this.page.click("button[type=submit]");
 
@@ -57,6 +64,7 @@ export default class GoMining {
         if (serverError) throw new Error(serverError);
 
         await this.page.waitForNavigation();
+        await this.screenshot();
         await this.saveCookies();
     }
 

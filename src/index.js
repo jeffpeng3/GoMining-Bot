@@ -10,10 +10,15 @@ if (!process.env.EMAIL || !process.env.PASSWORD) {
 
 async function main() {
     const Bot = new GoMining({ email: process.env.EMAIL, password: process.env.PASSWORD });
+    try {
     await Bot.login();
     console.log("Logged in successfully");
     await Bot.mine();
     await Bot.quit();
+    } catch (error) {
+        console.error("An error occurred:", error);
+        await Bot.screenshot();
+    }
 }
 
 (async () => {

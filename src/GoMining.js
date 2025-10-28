@@ -4,7 +4,7 @@ import puppeteer from "puppeteer";
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
-const BASE_URL = "https://app.gomining.com";
+const BASE_URL = "https://app.gmt.io";
 const COOKIES_PATH = path.join(__dirname, "../cookies.json");
 
 export default class GoMining {

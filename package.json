@@ -6,8 +6,6 @@
   },
   "dependencies": {
     "dotenv": "^16.4.5",
-    "puppeteer": "^22.11.0",
-    "puppeteer-extra": "^3.3.6",
-    "puppeteer-extra-plugin-stealth": "^2.11.2"
+    "patchright": "^1.0.0"
   }
 }

@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
-import puppeteer from 'puppeteer-extra'
-import StealthPlugin from 'puppeteer-extra-plugin-stealth'
+import { chromium } from 'patchright';
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
@@ -16,16 +15,20 @@ export default class GoMining {
     }
 
     async init() {
-        const browser = await puppeteer.use(StealthPlugin()).launch({
-            headless: "new",
-            args: ["--no-sandbox", "--disable-setuid-sandbox"]
+        const browser = await chromium.launch({
+            headless: true,
+            args: [
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-blink-features=AutomationControlled"
+            ]
         });
         const page = await browser.newPage();
         await page.setViewport({ width: 1920, height: 1080 });
 
         if (fs.existsSync(COOKIES_PATH)) {
             const cookies = JSON.parse(fs.readFileSync(COOKIES_PATH, "UTF-8"));
-            await page.setCookie(...cookies);
+            await page.context().addCookies(cookies);
         }
 
         this.browser = browser;
@@ -33,7 +36,7 @@ export default class GoMining {
     }
 
     async saveCookies() {
-        const cookies = await this.page.cookies();
+        const cookies = await this.page.context().cookies();
         fs.writeFileSync(COOKIES_PATH, JSON.stringify(cookies));
     }
 

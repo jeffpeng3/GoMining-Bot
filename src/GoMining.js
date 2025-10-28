@@ -4,7 +4,7 @@ import puppeteer from "puppeteer";
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
-const BASE_URL = "https://app.gmt.io";
+const BASE_URL = "https://app.gomining.com";
 const COOKIES_PATH = path.join(__dirname, "../cookies.json");
 
 export default class GoMining {
@@ -82,28 +82,21 @@ export default class GoMining {
 
     async mine() {
         await this.initPromise;
-        await this.page.goto(`${BASE_URL}/my-nft/mining-farm`);
+        await this.page.goto(`${BASE_URL}/nft-miners`);
         await this.page.waitForNavigation();
-        await this.page.waitForSelector("board-nft-mining-farm img");
-
-        const modalElement = await this.page.$("modal");
-        if (modalElement) {
-            await new Promise(resolve => setTimeout(resolve, 2_500));
-            await this.page.click("modal button");
-        }
+        await this.page.waitForSelector("mining-farm-card");
 
         let timerElement = await this.page.$("timer span");
         while (timerElement) {
             const remaining = await this.convertTimerToSeconds(timerElement);
             await this.waitAndRefresh(remaining);
-            await this.page.waitForSelector("board-nft-mining-farm img");
+            await this.page.waitForSelector("mining-farm-card");
 
             timerElement = await this.page.$("timer span");
         }
 
-        await this.page.waitForSelector("board-nft-mining-farm img");
         await new Promise(resolve => setTimeout(resolve, 2_500));
-        await this.page.click("board-nft-mining-farm img + button");
+        await this.page.click("service-button");
         await new Promise(resolve => setTimeout(resolve, 5_000));
     }
 
